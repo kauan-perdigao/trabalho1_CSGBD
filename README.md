@@ -1,0 +1,1 @@
+## Este é o repositório dedicado ao Trabalho 1 da Disciplina de Construção de Sistemas de Gerência de Bancos de Dados do semestre 2025.2.
