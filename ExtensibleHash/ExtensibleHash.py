@@ -1,13 +1,24 @@
+class Bucket:
+    def __init__(self, bucket_size: int):
+        pass
+    def insert(self, key: int, value: int):
+        pass
+    def search(self, key: int) -> int:
+        pass
+    def remove(self, key: int) -> bool:
+        pass
+
+
 class ExtensibleHash:
     def __init__(self, bucket_size: int):
         """Inicializa a tabela hash com o tamanho máximo de registros por bucket."""
         pass
 
-    def insert(self, key: int, value: any):
+    def insert(self, key: int, value: int):
         """Insere um par (chave, valor) na estrutura."""
         pass
 
-    def search(self, key: int) -> any:
+    def search(self, key: int) -> int:
         """Retorna o valor associado à chave, se existir."""
         pass
 

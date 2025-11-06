@@ -3,11 +3,11 @@ class BPlusTree:
         """Inicializa a árvore com a ordem especificada (máx. de chaves por nó)."""
         pass
 
-    def insert(self, key: int, value: any):
+    def insert(self, key: int, value: int):
         """Insere um par (chave, valor) na árvore B+."""
         pass
 
-    def search(self, key: int) -> any:
+    def search(self, key: int) -> int:
         """Retorna o valor associado à chave, se existir."""
         pass
 
