@@ -115,13 +115,17 @@ class ExtensibleHash:
     def insert(self, key: int, value: int):
         bucket_idx = self._get_bucket_index(key)
         bucket = self.directory[bucket_idx]
+        bucket_id = id(bucket)
         
         # Try to insert
         if bucket.insert(key, value):
+            print(f"  → Inserido no Bucket #{bucket_id} (índice {bucket_idx}, local_depth={bucket.local_depth})")
             return  # Insertion successful
         
         # Bucket is full, need to split
+        print(f"  ⚠ Bucket #{bucket_id} está cheio. Iniciando split...")
         self._split_bucket(bucket, bucket_idx)
+        print(f"  ✓ Split concluído. Global depth agora é {self.global_depth}")
         
         # Retry insertion after split
         self.insert(key, value)
@@ -129,44 +133,55 @@ class ExtensibleHash:
     def search(self, key: int) -> int:
         bucket_idx = self._get_bucket_index(key)
         bucket = self.directory[bucket_idx]
-        return bucket.search(key)
+        bucket_id = id(bucket)
+        result = bucket.search(key)
+        
+        if result is not None:
+            print(f"  → Encontrado no Bucket #{bucket_id} (índice {bucket_idx}, local_depth={bucket.local_depth})")
+        
+        return result
     
     def remove(self, key: int) -> bool:
         bucket_idx = self._get_bucket_index(key)
         bucket = self.directory[bucket_idx]
+        bucket_id = id(bucket)
         
         result = bucket.remove(key)
         
         if result:
+            print(f"  → Removido do Bucket #{bucket_id} (índice {bucket_idx}, local_depth={bucket.local_depth})")
             # Try to merge buckets if they're underfull
-            self._try_merge(bucket_idx)
+            merge_occurred = self._try_merge(bucket_idx)
+            if merge_occurred:
+                print(f"  ✓ Merge realizado. Buckets consolidados.")
         
         return result
     
     def _try_merge(self, bucket_idx: int):
+
         bucket = self.directory[bucket_idx]
         
         # Can't merge if local depth is already at minimum
         if bucket.local_depth <= 1:
-            return
+            return False
         
         # Find sibling bucket index (flip the bit at position local_depth-1)
         sibling_idx = bucket_idx ^ (1 << (bucket.local_depth - 1))
         
         # Check if sibling exists and is within directory bounds
         if sibling_idx >= len(self.directory):
-            return
+            return False
         
         sibling = self.directory[sibling_idx]
         
         # Can only merge if both buckets have same local depth
         if bucket.local_depth != sibling.local_depth:
-            return
+            return False
         
         # Check if merged bucket would fit in one bucket
         total_entries = len(bucket.entries) + len(sibling.entries)
         if total_entries > self.bucket_size:
-            return
+            return False
         
         # Merge: create new bucket with decreased local depth
         merged_bucket = Bucket(self.bucket_size, bucket.local_depth - 1)
@@ -181,6 +196,8 @@ class ExtensibleHash:
         for i in range(len(self.directory)):
             if self.directory[i] is bucket or self.directory[i] is sibling:
                 self.directory[i] = merged_bucket
+        
+        return True
     
     def display(self):
         print(f"\n{'='*60}")
