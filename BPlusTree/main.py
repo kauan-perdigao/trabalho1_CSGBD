@@ -19,7 +19,6 @@ def print_help():
 
 
 def _display(tree: BPlusTree):
-    # Reuse a simple display similar to demo
     level = [tree.root]
     depth = 0
     print("\nB+ Tree structure:")

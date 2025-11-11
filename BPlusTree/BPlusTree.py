@@ -6,6 +6,7 @@ Desenvolvido com ajuda de LLM (copilot)
 
 from __future__ import annotations
 from typing import List, Optional, Any
+import math
 
 
 class _Node:
@@ -194,3 +195,85 @@ class BPlusTree:
             return len(node.keys) > math.ceil(self.order / 2)
         else:
             return len(node.children) > math.ceil((self.order + 1) / 2)
+        
+    def _borrow_from_left(self, parent: _Node, idx: int, left: _Node, node: _Node):
+        if node.is_leaf:
+            k = left.keys.pop(-1)
+            v = left.values.pop(-1)
+            node.keys.insert(0, k)
+            node.values.insert(0, v)
+            parent.keys[idx - 1] = node.keys[0]
+        else:
+            child = left.children.pop(-1)
+            key = parent.keys[idx - 1]
+            node.children.insert(0, child)
+            node.keys.insert(0, key)
+            parent.keys[idx - 1] = left.keys.pop(-1)
+
+    def _borrow_from_right(self, parent: _Node, idx: int, right: _Node, node: _Node):
+        if node.is_leaf:
+            k = right.keys.pop(0)
+            v = right.values.pop(0)
+            node.keys.append(k)
+            node.values.append(v)
+            parent.keys[idx] = right.keys[0] if right.keys else None
+        else:
+            child = right.children.pop(0)
+            key = parent.keys[idx]
+            node.children.append(child)
+            node.keys.append(key)
+            parent.keys[idx] = right.keys.pop(0)
+
+    def _merge_nodes(self, parent: _Node, left_index: int):
+        left = parent.children[left_index]
+        right = parent.children[left_index + 1]
+
+        if left.is_leaf:
+            left.keys.extend(right.keys)
+            left.values.extend(right.values)
+            left.next = right.next
+            del parent.children[left_index + 1]
+            del parent.keys[left_index]
+        else:
+            sep_key = parent.keys[left_index]
+            left.keys.append(sep_key)
+            left.keys.extend(right.keys)
+            left.children.extend(right.children)
+            del parent.children[left_index + 1]
+            del parent.keys[left_index]
+
+        self._rebalance_after_delete(parent)
+
+    def display(self):
+        """Imprime a árvore nível por nível. Folhas também são mostradas com apontador next."""
+        q = [self.root]
+        level = 0
+        while q:
+            next_q = []
+            line = []
+            for node in q:
+                if node.is_leaf:
+                    line.append(f"Leaf(keys={node.keys})")
+                else:
+                    line.append(f"Internal(keys={node.keys})")
+                    for c in node.children:
+                        next_q.append(c)
+            print(f"Level {level}: " + " | ".join(line))
+            level += 1
+            q = next_q
+
+
+if __name__ == "__main__":
+    import random
+
+    tree = BPlusTree(order=4)
+    nums = list(range(1, 21))
+    random.shuffle(nums)
+    for n in nums:
+        tree.insert(n, n * 10)
+    tree.display()
+    print("Search 5 ->", tree.search(5))
+    for rem in [3, 4, 5, 6, 7]:
+        print(f"Removing {rem}")
+        tree.remove(rem)
+        tree.display()
