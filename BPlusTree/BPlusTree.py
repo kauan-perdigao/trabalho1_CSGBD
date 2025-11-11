@@ -1,6 +1,5 @@
 from __future__ import annotations
-from typing import List, Optional, Any, Tuple
-import math
+from typing import List, Optional, Any
 
 
 class _Node:
