@@ -75,3 +75,42 @@ Searching for keys:
 ```
 
 Saída completa em [`outputHash`](ExtensibleHash/outputHash.md)
+
+## BPlusTree
+
+O diretório `BPlusTree/` contém uma implementação didática de uma Árvore B+ (B+ Tree) utilizada no trabalho. A implementação disponibiliza operações básicas e scripts auxiliares para demonstrar o comportamento da estrutura.
+
+Arquivos principais:
+
+- [`BPlusTree`](BPlusTree/BPlusTree.py) — implementação da estrutura (`BPlusTree`), com operações: `insert`, `search`, `remove` e reequilíbrio básico.
+- [`demo.py`](BPlusTree/demo.py) — script com cenários automatizados de teste (inserções, buscas, splits, remoções e atualizações) e funções de visualização; serve como fonte para gerar saídas de exemplo em Markdown.
+- [`main.py`](BPlusTree/main.py) — utilitário interativo (linha de comando) para criar uma árvore com uma ordem definida e executar comandos `insert`, `remove`, `search`, `display`, `help` e `exit`.
+- [`outputBPlusTree`](BPlusTree/outputBPlusTree.md) — exemplo de saída gerada pelo [`demo.py`](BPlusTree/demo.py) (registro humano das execuções). Nem sempre está presente — pode ser gerado executando o [`demo.py`](BPlusTree/demo.py).
+
+Exemplo de trecho de saída do [`demo.py`](BPlusTree/demo.py):
+
+```bash
+======================================================================
+TEST 1: Basic Operations (Insert and Search)
+======================================================================
+
+Inserting keys: 1, 2, 3, 4...
+  -> Inserted (1, 100)
+  -> Inserted (2, 200)
+  -> Inserted (3, 300)
+  -> Inserted (4, 400)
+
+============================================================
+B+ TREE STRUCTURE
+============================================================
+
+Level 0: Node(keys=[4])
+
+Level 1: Leaf(keys=[1, 2, 3]) Leaf(keys=[4])
+
+Leaf chain:
+  Leaf #0 keys: [1, 2, 3], values: [100, 200, 300]
+  Leaf #1 keys: [4], values: [400]
+```
+
+Saída completa de exemplo: [`outputBPlusTree.md`](BPlusTree/outputBPlusTree.md).
